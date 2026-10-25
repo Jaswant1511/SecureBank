@@ -102,7 +102,7 @@ import java.util.logging.SimpleFormatter;
 public class BankWebServer {
 
     private static final Logger LOGGER = Logger.getLogger(BankWebServer.class.getName());
-    public static final int PORT = 8080;
+    public static final int PORT = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
 
     static {
         try {
@@ -3199,4 +3199,5 @@ public class BankWebServer {
         return sb.toString();
     }
 }
+
 
