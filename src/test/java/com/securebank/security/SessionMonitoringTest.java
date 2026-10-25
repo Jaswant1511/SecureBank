@@ -196,6 +196,7 @@ public class SessionMonitoringTest {
         Assertions.assertEquals("TIMEOUT_EXPIRED", dbSession.getSessionEndReason());
 
         Map<String, Integer> counts = sessionDAO.getActiveSessionCountsByRole();
+        Assertions.assertNotNull(counts, "Role counts map must not be null");
         List<UserSession> activeSessions = sessionDAO.getActiveSessions();
         for (UserSession s : activeSessions) {
             Assertions.assertNotEquals(sessionId, s.getSessionId(), "Expired session must not appear in active sessions");
@@ -354,6 +355,8 @@ public class SessionMonitoringTest {
         String t1 = sessionService.createSession(u1, "127.0.0.1");
         String t2 = sessionService.createSession(u2, "127.0.0.2");
         String t3 = sessionService.createSession(u3, "127.0.0.3");
+        Assertions.assertNotNull(t2, "Session token 2 must not be null");
+        Assertions.assertNotNull(t3, "Session token 3 must not be null");
 
         sessionService.invalidateSession(t1, "USER_LOGOUT"); // aarav logged out
 
