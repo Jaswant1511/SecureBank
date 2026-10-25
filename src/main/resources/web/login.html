@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Sign In — SecureBank</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sb-navy-dark: #F7F5EE;
+            --sb-navy-btn: #D9B66F;
+            --sb-navy-btn-hover: #C5A052;
+            --sb-brand-blue: #073B32;
+            --sb-brand-blue-hover: #0B4A3D;
+            --sb-brand-gold: #D9B66F;
+            --sb-brand-gold-hover: #C5A052;
+            --sb-slate-900: #152B2D;
+            --sb-slate-700: #152B2D;
+            --sb-slate-600: #455855;
+            --sb-slate-500: #455855;
+            --sb-slate-400: #5E706E;
+            --sb-slate-200: #E2DCD0;
+            --sb-slate-100: #F1EEE4;
+            --sb-slate-50: #F7F5EE;
+            --sb-icon-box-bg: rgba(217, 182, 111, 0.18);
+            --sb-transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #F7F5EE;
+            color: #152B2D;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ========================================================
+           1. TOP NAVIGATION HEADER BAR
+           ======================================================== */
+        .top-navbar {
+            height: 72px;
+            background: #FFFFFF;
+            border-bottom: 1px solid #E8E2D5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 48px;
+            position: relative;
+            z-index: 50;
+        }
+
+        .nav-logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .brand-logo-emblem {
+            width: 38px;
+            height: 38px;
+            background: #073B32;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 3px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            border: 1px solid #E8E2D5;
+            flex-shrink: 0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .brand-logo-emblem:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+        }
+
+        .brand-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .dashboard-watermark-layer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(42vw, 460px);
+            aspect-ratio: 1 / 1;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.035;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .dashboard-watermark-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-logo-icon {
+            display: none;
+        }
+
+        .nav-brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-brand-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #073B32;
+            line-height: 1.1;
+        }
+
+        .nav-brand-tagline {
+            font-size: 0.58rem;
+            font-weight: 700;
+            color: #687775;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .nav-links-center {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-link-item {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #455855;
+            text-decoration: none;
+            position: relative;
+            padding: 24px 0;
+            transition: color 0.15s ease;
+        }
+
+        .nav-link-item:hover {
+            color: var(--sb-brand-blue);
+        }
+
+        .nav-link-item.active {
+            color: var(--sb-brand-blue);
+            font-weight: 700;
+        }
+
+        .nav-link-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #D9B66F;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .nav-actions-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon-search {
+            background: none;
+            border: none;
+            color: #687775;
+            cursor: pointer;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: color 0.15s ease;
+        }
+
+        .nav-icon-search:hover {
+            color: #073B32;
+        }
+
+        .nav-locate-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: #455855;
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        .nav-locate-link:hover {
+            color: #073B32;
+        }
+
+        .btn-internet-banking {
+            background: #D9B66F;
+            color: #152B2D;
+            font-size: 0.86rem;
+            font-weight: 700;
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid #E8E2D5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--sb-transition);
+        }
+
+        .btn-internet-banking:hover {
+            background: var(--sb-navy-btn-hover);
+            transform: translateY(-1px);
+        }
+
+        /* ========================================================
+           2. HERO MAIN STAGE (SPLIT: BUILDING PHOTO + FLOATING LOGIN CARD)
+           ======================================================== */
+        .hero-stage {
+            position: relative;
+            min-height: 720px;
+            display: flex;
+            background-color: #073B32;
+            background-image: url('images/securebank_hq.jpg');
+            background-size: cover;
+            background-position: center left;
+        }
+
+        /* Left Gradient Vignette for Text Contrast */
+        .hero-stage::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to right,
+                rgba(7, 59, 50, 0.95) 0%,
+                rgba(11, 74, 61, 0.88) 42%,
+                rgba(7, 59, 50, 0.65) 70%,
+                rgba(7, 59, 50, 0.45) 100%
+            );
+            pointer-events: none;
+        }
+
+        .hero-inner-container {
+            width: 100%;
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 48px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+            gap: 40px;
+        }
+
+        /* Left Side: Editorial Typography & 4 Feature Columns */
+        .hero-left-content {
+            flex: 1.1;
+            color: #FFFFFF;
+            max-width: 580px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding: 20px 0;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 3.35rem;
+            font-weight: 700;
+            line-height: 1.18;
+            letter-spacing: -0.02em;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.88);
+            font-weight: 400;
+            margin-bottom: 48px;
+            max-width: 480px;
+        }
+
+        /* 4 Horizontal Feature Badges */
+        .hero-features-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-col {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .feature-icon-glyph {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+            display: inline-flex;
+            align-items: center;
+            color: #FFFFFF;
+        }
+
+        .feature-title {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            line-height: 1.25;
+        }
+
+        .feature-desc {
+            font-size: 0.74rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+        }
+
+        /* Right Side: Clean Floating White Sign-In Card */
+        .hero-right-card-wrap {
+            flex: 0.9;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+            background: #FFFFFF;
+            border-radius: 18px;
+            border: 1px solid #E2DCD0;
+            border-top: 4px solid #D9B66F;
+            box-shadow: 
+                0 10px 30px -5px rgba(7, 59, 50, 0.12),
+                0 25px 60px -12px rgba(21, 43, 45, 0.16), 
+                0 0 0 1px rgba(232, 226, 213, 0.5);
+            padding: 36px 36px 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-card-emblem-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .auth-card-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: #073B32;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .auth-card-subtitle {
+            font-size: 0.88rem;
+            color: #455855;
+            font-weight: 500;
+            margin-bottom: 22px;
+            line-height: 1.45;
+        }
+
+        /* Role Switcher Tabs (Customer | Teller | Administrator) */
+        .role-tabs-bar {
+            display: flex;
+            background: #F1EEE4;
+            border: 1px solid #E2DCD0;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 22px;
+        }
+
+        .role-tab-btn {
+            flex: 1;
+            padding: 9px 8px;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #455855;
+            border-radius: 7px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: var(--sb-transition);
+        }
+
+        .role-tab-btn:hover {
+            color: #073B32;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .role-tab-btn.active {
+            background: #FFFFFF;
+            color: #073B32;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(21, 43, 45, 0.08);
+            border-bottom: 2px solid #D9B66F;
+        }
+
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: #152B2D;
+            margin-bottom: 7px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-icon-left {
+            position: absolute;
+            left: 14px;
+            color: #4A5B59;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-input {
+            width: 100%;
+            height: 48px;
+            padding: 0 42px 0 42px;
+            font-family: inherit;
+            font-size: 0.94rem;
+            font-weight: 500;
+            color: #152B2D !important;
+            background: #FFFFFF !important;
+            border: 1.5px solid #D8D1C4 !important;
+            border-radius: 9px;
+            outline: none;
+            box-shadow: inset 0 1px 2px rgba(21, 43, 45, 0.03);
+            transition: var(--sb-transition);
+        }
+
+        .auth-input:focus {
+            border-color: #D9B66F !important;
+            box-shadow: 0 0 0 3px rgba(217, 182, 111, 0.25), inset 0 1px 2px rgba(21, 43, 45, 0.02) !important;
+        }
+
+        .auth-input::placeholder {
+            color: #5E706E !important;
+            font-size: 0.88rem;
+        }
+
+        .input-fill-flash {
+            animation: inputFlashAnim 0.5s ease-out;
+        }
+
+        @keyframes inputFlashAnim {
+            0% { background: #E2F4E9; border-color: #16845B; }
+            100% { background: #FFFFFF; border-color: #D8D1C4; }
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #4A5B59;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.15s ease;
+        }
+
+        .password-toggle-btn:hover {
+            color: #073B32;
+        }
+
+        /* Remember & Forgot Row */
+        .auth-utility-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 18px 0 22px 0;
+            font-size: 0.84rem;
+        }
+
+        .remember-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #384A48;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .remember-label input[type="checkbox"] {
+            accent-color: #073B32;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .forgot-link {
+            color: #073B32;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .forgot-link:hover {
+            color: #C5A052;
+            text-decoration: underline;
+        }
+
+        /* Primary Sign In Button */
+        .btn-signin-primary {
+            width: 100%;
+            height: 48px;
+            background: linear-gradient(135deg, #D9B66F 0%, #CFA95E 100%);
+            color: #152B2D;
+            font-size: 0.98rem;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+            border: 1px solid #C5A052;
+            border-radius: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(217, 182, 111, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .btn-signin-primary:hover {
+            background: linear-gradient(135deg, #E2C27F 0%, #D9B66F 100%);
+            border-color: #C5A052;
+            color: #152B2D;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(197, 160, 82, 0.4);
+        }
+
+        .btn-signin-primary:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(21, 43, 45, 0.15);
+        }
+
+        /* Alert Status Box */
+        .alert-box {
+            display: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .alert-danger {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            color: #B91C1C;
+        }
+
+        .alert-success {
+            background: #ECFDF5;
+            border: 1px solid #A7F3D0;
+            color: #065F46;
+        }
+
+        /* Account Creation Policy Notice (Restricted to Teller & Admin) */
+        .onboarding-section {
+            margin-top: 24px;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 16px;
+        }
+
+        .onboarding-restricted-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #111C2E;
+            border: 1px solid #E8E2D5;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            color: #A7B1C2;
+            line-height: 1.45;
+            text-align: left;
+        }
+
+        .onboarding-restricted-note svg {
+            color: var(--sb-brand-blue);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* ========================================================
+           3. FOUR TRUST PILLARS BOTTOM STRIP
+           ======================================================== */
+        .trust-pillars-section {
+            background: #FFFFFF;
+            border-top: 1px solid #E8E2D5;
+            border-bottom: 1px solid #E8E2D5;
+            padding: 36px 48px;
+        }
+
+        .trust-pillars-grid {
+            max-width: 1360px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .trust-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 6px 12px;
+            border-right: 1px solid #E8E2D5;
+        }
+
+        .trust-card:last-child {
+            border-right: none;
+        }
+
+        .trust-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--sb-icon-box-bg);
+            color: #073B32;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .trust-text-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .trust-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #073B32;
+            margin-bottom: 2px;
+        }
+
+        .trust-desc {
+            font-size: 0.78rem;
+            color: #455855;
+            line-height: 1.45;
+        }
+
+        /* ========================================================
+           4. DARK FOOTER BAR
+           ======================================================== */
+        .bottom-dark-footer {
+            background: #073B32;
+            color: #E8E2D5;
+            padding: 22px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            border-top: 1px solid rgba(232, 226, 213, 0.15);
+        }
+
+        .footer-links-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: #E8E2D5;
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        .footer-link:hover {
+            color: #D9B66F;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-social-icons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #E8E2D5;
+        }
+
+        .footer-social-icon {
+            color: inherit;
+            text-decoration: none;
+            font-size: 15px;
+            transition: color 0.15s ease;
+        }
+
+        .footer-social-icon:hover {
+            color: #FFFFFF;
+        }
+
+        .copyright-text {
+            color: rgba(232, 226, 213, 0.75);
+        }
+
+        /* ========================================================
+           REGISTRATION MODAL
+           ======================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+            width: 100%;
+            max-width: 540px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 32px;
+            animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #64748B;
+            cursor: pointer;
+            line-height: 1;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        .modal-close-btn:hover {
+            color: #0F172A;
+        }
+
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1080px) {
+            .hero-stage {
+                background-position: center;
+            }
+            .hero-inner-container {
+                flex-direction: column;
+                padding: 32px 24px;
+            }
+            .hero-left-content {
+                max-width: 100%;
+            }
+            .hero-right-card-wrap {
+                width: 100%;
+                justify-content: center;
+            }
+            .auth-card {
+                max-width: 500px;
+            }
+            .trust-pillars-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .trust-card:nth-child(2) {
+                border-right: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-navbar {
+                padding: 0 20px;
+            }
+            .nav-links-center, .nav-locate-link {
+                display: none;
+            }
+            .hero-features-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .trust-pillars-grid {
+                grid-template-columns: 1fr;
+            }
+            .trust-card {
+                border-right: none;
+                border-bottom: 1px solid #E5E7EB;
+                padding-bottom: 14px;
+            }
+            .bottom-dark-footer {
+                flex-direction: column;
+                gap: 14px;
+                text-align: center;
+                padding: 24px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. TOP NAVBAR -->
+    <header class="top-navbar">
+        <a href="login.html" class="nav-logo-group">
+            <div class="nav-logo-icon">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 21h18M3 10h18M5 10v11M9 10v11M15 10v11M19 10v11M12 2L2 7h20L12 2z"/>
+                </svg>
+            </div>
+            <div class="nav-brand-text">
+                <span class="nav-brand-title">SecureBank</span>
+                <span class="nav-brand-tagline">TRUSTED. SECURE. ALWAYS WITH YOU.</span>
+            </div>
+        </a>
+
+        <nav class="nav-links-center">
+            <a href="javascript:void(0)" class="nav-link-item active">Personal</a>
+            <a href="javascript:void(0)" class="nav-link-item">Business</a>
+            <a href="javascript:void(0)" class="nav-link-item">Investments</a>
+            <a href="javascript:void(0)" class="nav-link-item">Loans</a>
+            <a href="javascript:void(0)" class="nav-link-item">Cards</a>
+            <a href="javascript:void(0)" class="nav-link-item">Insurance</a>
+            <a href="javascript:void(0)" class="nav-link-item">Support</a>
+        </nav>
+
+        <div class="nav-actions-right">
+            <button type="button" class="nav-icon-search" title="Search">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+            <a href="javascript:void(0)" class="nav-locate-link">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>Locate Us</span>
+            </a>
+            <button type="button" class="btn-internet-banking" onclick="focusLoginInput()">
+                <span>Internet Banking</span>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- 2. HERO STAGE: BUILDING PHOTO + FLOATING WHITE LOGIN CARD -->
+    <main class="hero-stage">
+        <div class="hero-inner-container">
+            
+            <!-- Left Side: Editorial Typography & 4 Feature Pillars -->
+            <div class="hero-left-content">
+                <div>
+                    <h1 class="hero-title">
+                        Banking<br>
+                        for a Brighter<br>
+                        Tomorrow
+                    </h1>
+                    <p class="hero-subtitle">
+                        Secure banking. Smarter solutions.<br>
+                        For every step of your journey.
+                    </p>
+                </div>
+
+                <!-- 4 Feature Pillars Along the Bottom of the Image -->
+                <div class="hero-features-row">
+                    <div class="feature-col">
+                        <div class="feature-icon-glyph">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Secure Transactions</div>
+                        <div class="feature-desc">Your money, our priority</div>
+                    </div>
+
+                    <div class="feature-col">
+                        <div class="feature-icon-glyph">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="5" width="20" height="14" rx="2"/>
+                                <line x1="2" y1="10" x2="22" y2="10"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">24/7 Banking</div>
+                        <div class="feature-desc">Any time, anywhere</div>
+                    </div>
+
+                    <div class="feature-col">
+                        <div class="feature-icon-glyph">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Grow Your Wealth</div>
+                        <div class="feature-desc">Savings, FD, Investments</div>
+                    </div>
+
+                    <div class="feature-col">
+                        <div class="feature-icon-glyph">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Trusted Support</div>
+                        <div class="feature-desc">We are always here for you</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Clean White Floating Login Card -->
+            <div class="hero-right-card-wrap">
+                <div class="auth-card">
+                    <h2 class="auth-card-title">Account Sign In</h2>
+                    <p class="auth-card-subtitle" id="authCardSubtitle">Sign in to access your personal banking account</p>
+
+                    <!-- Role Switcher Tabs (Customer | Teller | Administrator) -->
+                    <div class="role-tabs-bar">
+                        <button type="button" class="role-tab-btn active" id="tabCustomer" onclick="selectRole('customer')">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span>Customer</span>
+                        </button>
+                        <button type="button" class="role-tab-btn" id="tabTeller" onclick="selectRole('teller')">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                            </svg>
+                            <span>Teller</span>
+                        </button>
+                        <button type="button" class="role-tab-btn" id="tabAdmin" onclick="selectRole('admin')">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                            <span>Administrator</span>
+                        </button>
+                    </div>
+
+                    <!-- Status Alert Box -->
+                    <div class="alert-box alert-danger" id="loginAlert"></div>
+
+                    <!-- Sign In Form -->
+                    <form id="loginForm" onsubmit="handleSignIn(event)">
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="loginIdentifier">Username or Email</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon-left">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </span>
+                                <input type="text" id="loginIdentifier" class="auth-input" placeholder="Enter your username or email" value="aarav" required autocomplete="username">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="loginPassword">Password</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon-left">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                </span>
+                                <input type="password" id="loginPassword" class="auth-input" placeholder="Enter your password" value="Password@123" required autocomplete="current-password">
+                                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword', this)" title="Show/Hide Password">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="auth-utility-row">
+                            <label class="remember-label">
+                                <input type="checkbox" id="rememberMe" checked>
+                                <span>Remember me</span>
+                            </label>
+                            <a href="javascript:void(0)" class="forgot-link" onclick="handleForgotPasswordNotice()">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="btn-signin-primary" id="submitBtn">
+                            <span id="submitBtnText">Sign In</span>
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </form>
+
+                    <!-- Account Opening Notice: Restricted to Teller & Admin -->
+                    <div class="onboarding-section">
+                        <div class="onboarding-restricted-note">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                            <div>
+                                <strong>Need to Open a New Account?</strong><br>
+                                Account opening is restricted to authorized <strong>Branch Tellers</strong> and <strong>Administrators</strong>. Please visit your nearest SecureBank branch with valid KYC documentation.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 3. FOUR TRUST PILLARS SECTION -->
+    <section class="trust-pillars-section">
+        <div class="trust-pillars-grid">
+            <div class="trust-card">
+                <div class="trust-icon-box">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <div class="trust-text-group">
+                    <span class="trust-title">Your data is protected</span>
+                    <span class="trust-desc">We use advanced encryption to keep your information safe.</span>
+                </div>
+            </div>
+
+            <div class="trust-card">
+                <div class="trust-icon-box">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="M9 12l2 2 4-4"/>
+                    </svg>
+                </div>
+                <div class="trust-text-group">
+                    <span class="trust-title">Fraud monitoring</span>
+                    <span class="trust-desc">We actively monitor your account 24/7 to prevent fraud.</span>
+                </div>
+            </div>
+
+            <div class="trust-card">
+                <div class="trust-icon-box">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+                        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+                    </svg>
+                </div>
+                <div class="trust-text-group">
+                    <span class="trust-title">Dedicated support</span>
+                    <span class="trust-desc">Get help anytime from our customer care team.</span>
+                </div>
+            </div>
+
+            <div class="trust-card">
+                <div class="trust-icon-box">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                </div>
+                <div class="trust-text-group">
+                    <span class="trust-title">Bank on the go</span>
+                    <span class="trust-desc">Access your accounts securely from any device.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. BOTTOM DARK FOOTER -->
+    <footer class="bottom-dark-footer">
+        <div class="footer-links-left">
+            <a href="javascript:void(0)" class="footer-link">About Us</a>
+            <span>|</span>
+            <a href="javascript:void(0)" class="footer-link">Careers</a>
+            <span>|</span>
+            <a href="javascript:void(0)" class="footer-link">Security</a>
+            <span>|</span>
+            <a href="javascript:void(0)" class="footer-link">Privacy Policy</a>
+            <span>|</span>
+            <a href="javascript:void(0)" class="footer-link">Terms & Conditions</a>
+            <span>|</span>
+            <a href="javascript:void(0)" class="footer-link">Contact Us</a>
+        </div>
+
+        <div class="footer-right">
+            <div class="footer-social-icons">
+                <a href="javascript:void(0)" class="footer-social-icon" title="Facebook">f</a>
+                <a href="javascript:void(0)" class="footer-social-icon" title="Twitter">𝕏</a>
+                <a href="javascript:void(0)" class="footer-social-icon" title="LinkedIn">in</a>
+                <a href="javascript:void(0)" class="footer-social-icon" title="Instagram">📷</a>
+                <a href="javascript:void(0)" class="footer-social-icon" title="YouTube">▶</a>
+            </div>
+            <span class="copyright-text">© 2026 SecureBank. All rights reserved.</span>
+        </div>
+    </footer>
+
+
+
+    <script>
+        let currentRole = 'customer';
+
+        function selectRole(role) {
+            currentRole = role;
+            document.querySelectorAll('.role-tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            const idField = document.getElementById('loginIdentifier');
+            const pwdField = document.getElementById('loginPassword');
+            const subtitle = document.getElementById('authCardSubtitle');
+            document.getElementById('loginAlert').style.display = 'none';
+
+            if (role === 'customer') {
+                document.getElementById('tabCustomer').classList.add('active');
+                idField.value = 'aarav';
+                pwdField.value = 'Password@123';
+                subtitle.textContent = 'Sign in to access your personal banking account';
+            } else if (role === 'teller') {
+                document.getElementById('tabTeller').classList.add('active');
+                idField.value = 'teller_suresh';
+                pwdField.value = 'Teller@123';
+                subtitle.textContent = 'Sign in to authorized Teller Terminal operations';
+            } else if (role === 'admin') {
+                document.getElementById('tabAdmin').classList.add('active');
+                idField.value = 'admin_rajesh';
+                pwdField.value = 'Admin@123';
+                subtitle.textContent = 'Sign in to Core Administrator control console';
+            }
+
+            idField.classList.add('input-fill-flash');
+            pwdField.classList.add('input-fill-flash');
+            setTimeout(() => {
+                idField.classList.remove('input-fill-flash');
+                pwdField.classList.remove('input-fill-flash');
+            }, 500);
+        }
+
+        function focusLoginInput() {
+            document.getElementById('loginIdentifier').focus();
+        }
+
+
+
+        function showAlert(msg, isSuccess = false) {
+            const alertBox = document.getElementById('loginAlert');
+            alertBox.textContent = msg;
+            alertBox.style.display = 'block';
+            alertBox.className = 'alert-box ' + (isSuccess ? 'alert-success' : 'alert-danger');
+        }
+
+
+
+        function handleForgotPasswordNotice() {
+            showAlert('For security reasons, password resets require authorized branch verification. Please visit your nearest branch or contact phone banking.');
+        }
+
+        function togglePasswordVisibility(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+            } else {
+                input.type = 'password';
+                btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+            }
+        }
+
+        async function handleSignIn(e) {
+            e.preventDefault();
+            const identifier = document.getElementById('loginIdentifier').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!identifier || !password) {
+                showAlert('Please provide your username/email and password.');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Signing in...</span>';
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: identifier, password: password })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    sessionStorage.setItem('sb_token', data.token);
+                    sessionStorage.setItem('sb_user', JSON.stringify(data.user));
+                    if (data.account) {
+                        sessionStorage.setItem('sb_account', JSON.stringify(data.account));
+                    }
+                    if (data.accounts) {
+                        sessionStorage.setItem('sb_accounts', JSON.stringify(data.accounts));
+                    }
+
+                    showAlert('Authentication successful! Initializing secure banking portal...', true);
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 400);
+                } else {
+                    showAlert(data.message || 'Invalid username or password.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Sign In</span> <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                showAlert('Unable to reach core banking server. Check connection.');
+                btn.disabled = false;
+                btn.innerHTML = '<span>Sign In</span> <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+            }
+        }
+
+
+    </script>
+</body>
+</html>

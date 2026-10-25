@@ -1,0 +1,65 @@
+.env
+.env.*
+!.env.example
+*.class
+*.log
+target/
+build/
+out/
+.idea/
+.vscode/
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Java build output
+target/
+build/
+out/
+*.class
+
+# IDE files
+.idea/
+.vscode/
+
+# Logs and local backups
+logs/
+backups/
+*.log
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Java build output
+target/
+build/
+out/
+*.class
+
+# IDE files
+.idea/
+.vscode/
+
+# Logs and local backups
+logs/
+backups/
+*.log
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated health-check report
+/Status
+
+# Backup files
+*.bak
+*.bak_*
