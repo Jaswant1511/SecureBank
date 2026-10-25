@@ -63,53 +63,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Ensure a valid authenticated session exists
+// Ensure a valid authenticated session exists.
+// Never create a login session automatically.
 async function ensureSession() {
-    if (state.currentUser && state.token) return true;
     const savedToken = sessionStorage.getItem('sb_token');
     const savedUser = sessionStorage.getItem('sb_user');
+
     if (savedToken && savedUser) {
         try {
             state.token = savedToken;
             state.currentUser = JSON.parse(savedUser);
+
             const savedAcc = sessionStorage.getItem('sb_account');
             if (savedAcc) {
                 state.account = JSON.parse(savedAcc);
             }
+
             return true;
         } catch (e) {
-            sessionStorage.clear();
+            sessionStorage.removeItem('sb_token');
+            sessionStorage.removeItem('sb_user');
+            sessionStorage.removeItem('sb_account');
+            state.token = null;
+            state.currentUser = null;
+            state.account = null;
         }
     }
-    // Auto-login fallback for immediate interactive dashboard experience
-    try {
-        const resp = await _nativeFetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: 'aarav', password: 'Password@123' })
-        });
-        if (resp.ok) {
-            const data = await resp.json();
-            if (data.success && data.token) {
-                state.token = data.token;
-                state.currentUser = data.user;
-                state.account = data.account || null;
-                sessionStorage.setItem('sb_token', data.token);
-                sessionStorage.setItem('sb_user', JSON.stringify(data.user));
-                if (data.account) {
-                    sessionStorage.setItem('sb_account', JSON.stringify(data.account));
-                }
-                return true;
-            }
-        }
-    } catch (err) {
-        console.warn('Auto-login fallback error:', err);
-    }
-    // If auto-login fails, redirect to login page
-    window.location.href = 'login.html';
+
+    sessionStorage.removeItem('sb_token');
+    sessionStorage.removeItem('sb_user');
+    sessionStorage.removeItem('sb_account');
+
+    state.token = null;
+    state.currentUser = null;
+    state.account = null;
+
+    window.location.replace('login.html');
     return false;
 }
-
 // ==========================================
 // AUTHENTICATION & SESSION MANAGEMENT
 // ==========================================
