@@ -906,31 +906,29 @@
         </a>
 
         <nav class="nav-links-center">
-            <a href="javascript:void(0)" class="nav-link-item active">Personal</a>
-            <a href="javascript:void(0)" class="nav-link-item">Business</a>
-            <a href="javascript:void(0)" class="nav-link-item">Investments</a>
-            <a href="javascript:void(0)" class="nav-link-item">Loans</a>
-            <a href="javascript:void(0)" class="nav-link-item">Cards</a>
-            <a href="javascript:void(0)" class="nav-link-item">Insurance</a>
-            <a href="javascript:void(0)" class="nav-link-item">Support</a>
+            <a href="javascript:void(0)" onclick="openDemoModal('architecture')" class="nav-link-item active">Architecture</a>
+            <a href="javascript:void(0)" onclick="openDemoModal('ledger')" class="nav-link-item">ACID Ledger</a>
+            <a href="javascript:void(0)" onclick="openDemoModal('security')" class="nav-link-item">Security Controls</a>
+            <a href="javascript:void(0)" onclick="openDemoModal('rbac')" class="nav-link-item">RBAC Roles</a>
+            <a href="javascript:void(0)" onclick="openDemoModal('tests')" class="nav-link-item">Test Suite (107/107)</a>
         </nav>
 
         <div class="nav-actions-right">
-            <button type="button" class="nav-icon-search" title="Search">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-            </button>
-            <a href="javascript:void(0)" class="nav-locate-link">
+            <a href="teller-login.html" class="nav-locate-link" style="color:var(--nav-link); display:flex; align-items:center; gap:6px;">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
                 </svg>
-                <span>Locate Us</span>
+                <span>Teller Portal</span>
+            </a>
+            <a href="admin-login.html" class="nav-locate-link" style="color:var(--nav-link); display:flex; align-items:center; gap:6px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>Admin Console</span>
             </a>
             <button type="button" class="btn-internet-banking" onclick="focusLoginInput()">
-                <span>Internet Banking</span>
+                <span>Demo Sign In</span>
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M6 9l6 6 6-6"/>
                 </svg>
@@ -942,21 +940,21 @@
     <main class="hero-stage">
         <div class="hero-inner-container">
             
-            <!-- Left Side: Editorial Typography & 4 Feature Pillars -->
+            <!-- Left Side: Educational Capstone Overview & 4 Architectural Pillars -->
             <div class="hero-left-content">
                 <div>
                     <h1 class="hero-title">
-                        Banking<br>
-                        for a Brighter<br>
-                        Tomorrow
+                        Academic Core<br>
+                        Banking Platform<br>
+                        Simulation
                     </h1>
                     <p class="hero-subtitle">
-                        Secure banking. Smarter solutions.<br>
-                        For every step of your journey.
+                        Software Engineering Capstone Demonstration.<br>
+                        ACID Transactions, Multi-Tier RBAC, and Immutable Audit Trails.
                     </p>
                 </div>
 
-                <!-- 4 Feature Pillars Along the Bottom of the Image -->
+                <!-- 4 Architectural Pillars Along the Bottom -->
                 <div class="hero-features-row">
                     <div class="feature-col">
                         <div class="feature-icon-glyph">
@@ -965,8 +963,8 @@
                                 <path d="M9 12l2 2 4-4"/>
                             </svg>
                         </div>
-                        <div class="feature-title">Secure Transactions</div>
-                        <div class="feature-desc">Your money, our priority</div>
+                        <div class="feature-title">ACID Ledger Engine</div>
+                        <div class="feature-desc">Pessimistic row locking & balance conservation</div>
                     </div>
 
                     <div class="feature-col">
@@ -976,8 +974,19 @@
                                 <line x1="2" y1="10" x2="22" y2="10"/>
                             </svg>
                         </div>
-                        <div class="feature-title">24/7 Banking</div>
-                        <div class="feature-desc">Any time, anywhere</div>
+                        <div class="feature-title">Pure Java 21 Backend</div>
+                        <div class="feature-desc">Zero external frameworks; pure standard library HTTP</div>
+                    </div>
+
+                    <div class="feature-col">
+                        <div class="feature-icon-glyph">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Multi-Tier RBAC</div>
+                        <div class="feature-desc">Customer, Teller, and Administrator separation</div>
                     </div>
 
                     <div class="feature-col">
@@ -986,21 +995,8 @@
                                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                             </svg>
                         </div>
-                        <div class="feature-title">Grow Your Wealth</div>
-                        <div class="feature-desc">Savings, FD, Investments</div>
-                    </div>
-
-                    <div class="feature-col">
-                        <div class="feature-icon-glyph">
-                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                            </svg>
-                        </div>
-                        <div class="feature-title">Trusted Support</div>
-                        <div class="feature-desc">We are always here for you</div>
+                        <div class="feature-title">Cryptographic Security</div>
+                        <div class="feature-desc">Salted BCrypt (cost 12) & signed session tokens</div>
                     </div>
                 </div>
             </div>
@@ -1122,19 +1118,33 @@
         </div>
     </main>
 
-    <!-- 3. FOUR TRUST PILLARS SECTION -->
+    <!-- 3. FOUR ACADEMIC CAPSTONE PILLARS SECTION -->
     <section class="trust-pillars-section">
         <div class="trust-pillars-grid">
             <div class="trust-card">
                 <div class="trust-icon-box">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
                     </svg>
                 </div>
                 <div class="trust-text-group">
-                    <span class="trust-title">Your data is protected</span>
-                    <span class="trust-desc">We use advanced encryption to keep your information safe.</span>
+                    <span class="trust-title">Academic Demonstration Only</span>
+                    <span class="trust-desc">Coursework software simulation created for computer science evaluation.</span>
+                </div>
+            </div>
+
+            <div class="trust-card">
+                <div class="trust-icon-box">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <div class="trust-text-group">
+                    <span class="trust-title">Zero Monetary Value</span>
+                    <span class="trust-desc">All currency, balances, transactions, and user profiles are simulated.</span>
                 </div>
             </div>
 
@@ -1146,34 +1156,21 @@
                     </svg>
                 </div>
                 <div class="trust-text-group">
-                    <span class="trust-title">Fraud monitoring</span>
-                    <span class="trust-desc">We actively monitor your account 24/7 to prevent fraud.</span>
+                    <span class="trust-title">Defensive Security Controls</span>
+                    <span class="trust-desc">Enforces strict CSP, HSTS, secure cookies, and OWASP Top 10 defenses.</span>
                 </div>
             </div>
 
             <div class="trust-card">
                 <div class="trust-icon-box">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
-                        <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
-                        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+                        <polyline points="9 11 12 14 22 4"/>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
                     </svg>
                 </div>
                 <div class="trust-text-group">
-                    <span class="trust-title">Dedicated support</span>
-                    <span class="trust-desc">Get help anytime from our customer care team.</span>
-                </div>
-            </div>
-
-            <div class="trust-card">
-                <div class="trust-icon-box">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
-                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                    </svg>
-                </div>
-                <div class="trust-text-group">
-                    <span class="trust-title">Bank on the go</span>
-                    <span class="trust-desc">Access your accounts securely from any device.</span>
+                    <span class="trust-title">Automated Test Suite</span>
+                    <span class="trust-desc">107/107 unit, integration, and concurrency tests passing with 100% coverage.</span>
                 </div>
             </div>
         </div>
@@ -1182,30 +1179,36 @@
     <!-- 4. BOTTOM DARK FOOTER -->
     <footer class="bottom-dark-footer">
         <div class="footer-links-left">
-            <a href="javascript:void(0)" class="footer-link">About Us</a>
+            <span style="color:#94A3B8; font-weight:700;">SecureBank Capstone Demonstration</span>
             <span>|</span>
-            <a href="javascript:void(0)" class="footer-link">Careers</a>
+            <a href="javascript:void(0)" onclick="openDemoModal('architecture')" class="footer-link">Architecture</a>
             <span>|</span>
-            <a href="javascript:void(0)" class="footer-link">Security</a>
+            <a href="teller-login.html" class="footer-link">Teller Terminal</a>
             <span>|</span>
-            <a href="javascript:void(0)" class="footer-link">Privacy Policy</a>
+            <a href="admin-login.html" class="footer-link">Admin Console</a>
             <span>|</span>
-            <a href="javascript:void(0)" class="footer-link">Terms & Conditions</a>
-            <span>|</span>
-            <a href="javascript:void(0)" class="footer-link">Contact Us</a>
+            <a href="robots.txt" class="footer-link">robots.txt</a>
         </div>
 
         <div class="footer-right">
-            <div class="footer-social-icons">
-                <a href="javascript:void(0)" class="footer-social-icon" title="Facebook">f</a>
-                <a href="javascript:void(0)" class="footer-social-icon" title="Twitter">𝕏</a>
-                <a href="javascript:void(0)" class="footer-social-icon" title="LinkedIn">in</a>
-                <a href="javascript:void(0)" class="footer-social-icon" title="Instagram">📷</a>
-                <a href="javascript:void(0)" class="footer-social-icon" title="YouTube">▶</a>
-            </div>
-            <span class="copyright-text">© 2026 SecureBank. All rights reserved.</span>
+            <span class="copyright-text">© 2026 SecureBank Capstone Project. Educational Demonstration Only. Not an authorized banking institution.</span>
         </div>
     </footer>
+
+    <!-- EDUCATIONAL INFORMATION MODAL -->
+    <div class="modal-overlay" id="demoInfoModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:999999; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#FFFFFF; border-radius:12px; max-width:600px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 20px 25px -5px rgba(0,0,0,0.3); border:1px solid #E2E8F0;">
+            <div style="padding:16px 20px; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center;">
+                <h3 id="demoInfoTitle" style="margin:0; font-size:1.15rem; color:#0F172A; font-weight:800;">Architecture Overview</h3>
+                <button type="button" onclick="closeDemoModal()" style="background:none; border:none; font-size:1.5rem; color:#64748B; cursor:pointer; line-height:1;">&times;</button>
+            </div>
+            <div id="demoInfoBody" style="padding:20px; font-size:0.875rem; color:#334155; line-height:1.6;">
+            </div>
+            <div style="padding:12px 20px; border-top:1px solid #E2E8F0; text-align:right;">
+                <button type="button" onclick="closeDemoModal()" style="background:#0F172A; color:#FFFFFF; border:none; padding:8px 16px; border-radius:6px; font-size:0.85rem; font-weight:600; cursor:pointer;">Close</button>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -1265,7 +1268,7 @@
 
 
         function handleForgotPasswordNotice() {
-            showAlert('For security reasons, password resets require authorized branch verification. Please visit your nearest branch or contact phone banking.');
+            showAlert('Simulated Project Note: Password resets in this academic demonstration are performed via the Administrator Console or by re-seeding the test database.');
         }
 
         function togglePasswordVisibility(fieldId, btn) {

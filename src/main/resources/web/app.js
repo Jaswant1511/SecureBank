@@ -3376,7 +3376,7 @@ function copyAccountDetails() {
 }
 
 function requestChequeBook() {
-    showToast('Cheque book request (25 leaves) submitted. Dispatched to registered address.', 'success');
+    showToast('Simulated cheque leaf request recorded for academic demonstration.', 'info');
     closeModal('accountOptionsModal');
 }
 
