@@ -5,16 +5,16 @@ echo ===========================================================================
 echo             SECUREBANK CAPSTONE — COMPILATION AND BUILD ENGINE                   
 echo ===============================================================================
 
-rem Locate javac
-where javac >nul 2>nul
-if %errorlevel% equ 0 (
-    set JAVAC_CMD=javac
+rem Locate javac: Prioritize JDK 25
+if exist "E:\java file\jdk-25.0.2\bin\javac.exe" (
+    set "JAVAC_CMD=E:\java file\jdk-25.0.2\bin\javac.exe"
 ) else (
-    if exist "E:\java file\jdk-25.0.2\bin\javac.exe" (
-        set "JAVAC_CMD=E:\java file\jdk-25.0.2\bin\javac.exe"
+    where javac >nul 2>nul
+    if %errorlevel% equ 0 (
+        set JAVAC_CMD=javac
     ) else (
         echo [ERROR] JDK compiler 'javac' was not found on PATH or E:\java file\jdk-25.0.2.
-        echo Please ensure Java 17+ JDK is installed.
+        echo Please ensure Java 25+ JDK is installed.
         exit /b 1
     )
 )

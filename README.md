@@ -1,7 +1,7 @@
 # SecureBank: Complete Banking Management & Automation System
 **Enterprise Capstone Project in Advanced Object-Oriented Software Engineering, Cybersecurity & Full-Stack Automation**
 
-[![Java](https://img.shields.io/badge/Java-25%20%2F%2017%2B-blue.svg)](https://www.oracle.com/java/)
+[![Java](https://img.shields.io/badge/Java-25%20LTS-blue.svg)](https://www.oracle.com/java/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-orange.svg)](https://www.mysql.com/)
 [![Database Compatibility](https://img.shields.io/badge/Fallback-H2%20MySQL%20Mode-green.svg)](https://www.h2database.com/)
 [![Security](https://img.shields.io/badge/Security-BCrypt%20WorkFactor%2012-red.svg)](https://en.wikipedia.org/wiki/Bcrypt)
@@ -94,7 +94,7 @@ SecureBank features dedicated Windows control scripts designed for seamless back
 ## 4. Getting Started
 
 ### Prerequisites
-- **Java Development Kit (JDK)**: Java 17 LTS, 21 LTS, or 25 (e.g. `E:\java file\jdk-25.0.2` or configured on `PATH`).
+- **Java Development Kit (JDK)**: Java 25 LTS (e.g. `E:\java file\jdk-25.0.2` or configured on `PATH`).
 - **Web Browser**: Google Chrome (or default system browser).
 - **Database**: MySQL 8.0+ *(Optional: If MySQL is not present, SecureBank automatically initializes the embedded in-memory H2 database in MySQL compatibility mode)*.
 

@@ -1,13 +1,13 @@
 @echo off
 setlocal
 
-rem Locate java
-where java >nul 2>nul
-if %errorlevel% equ 0 (
-    set JAVA_CMD=java
+rem Locate java: Prioritize JDK 25
+if exist "E:\java file\jdk-25.0.2\bin\java.exe" (
+    set "JAVA_CMD=E:\java file\jdk-25.0.2\bin\java.exe"
 ) else (
-    if exist "E:\java file\jdk-25.0.2\bin\java.exe" (
-        set "JAVA_CMD=E:\java file\jdk-25.0.2\bin\java.exe"
+    where java >nul 2>nul
+    if %errorlevel% equ 0 (
+        set JAVA_CMD=java
     ) else (
         echo [ERROR] Java runtime was not found on PATH or E:\java file\jdk-25.0.2.
         exit /b 1

@@ -165,17 +165,19 @@ public final class DatabaseConfig {
         initializeSchema();
         seedTestData();
 
-        // Start embedded H2 Web Console on port 8082 for local inspection
-        try {
-            boolean allowOthers = "true".equalsIgnoreCase(System.getenv("SECUREBANK_H2_ALLOW_OTHERS"));
-            if (allowOthers && !isProduction()) {
-                org.h2.tools.Server.createWebServer("-webPort", "8082", "-webAllowOthers", "-ifNotExists").start();
-                LOGGER.info("[H2 CONSOLE] H2 Database Web Console accessible at http://localhost:8082 (allowOthers=true)");
-            } else {
-                org.h2.tools.Server.createWebServer("-webPort", "8082", "-ifNotExists").start();
-                LOGGER.info("[H2 CONSOLE] H2 Database Web Console accessible locally at http://localhost:8082");
+        // Start embedded H2 Web Console on port 8082 for local inspection (Strictly disabled in production)
+        if (!isProduction()) {
+            try {
+                boolean allowOthers = "true".equalsIgnoreCase(System.getenv("SECUREBANK_H2_ALLOW_OTHERS"));
+                if (allowOthers) {
+                    org.h2.tools.Server.createWebServer("-webPort", "8082", "-webAllowOthers", "-ifNotExists").start();
+                    LOGGER.info("[H2 CONSOLE] H2 Database Web Console accessible at http://localhost:8082 (allowOthers=true)");
+                } else {
+                    org.h2.tools.Server.createWebServer("-webPort", "8082", "-ifNotExists").start();
+                    LOGGER.info("[H2 CONSOLE] H2 Database Web Console accessible locally at http://localhost:8082");
+                }
+            } catch (Throwable ignored) {
             }
-        } catch (Throwable ignored) {
         }
     }
 
@@ -246,6 +248,19 @@ public final class DatabaseConfig {
                 }
             } catch (SQLException ignored) {
             }
+
+            // Ensure 100 customer accounts are seeded in database if not present
+            try (Statement st = conn.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM accounts")) {
+                if (rs.next() && rs.getInt(1) < 100) {
+                    String seed100 = loadResourceScript("/schema_seed_100_accounts.sql");
+                    if (seed100 != null && !seed100.isEmpty()) {
+                        executeSqlScript(conn, seed100);
+                        LOGGER.info("Seeded 100 customer accounts into database.");
+                    }
+                }
+            } catch (SQLException ignored) {
+            }
         } catch (SQLException e) {
             LOGGER.log(Level.WARNING, "Schema initialization warning: " + e.getMessage());
         }
@@ -256,16 +271,31 @@ public final class DatabaseConfig {
      */
     public static synchronized void seedTestData() {
         try (Connection conn = getConnection()) {
+            boolean hasAdmin = false;
             try (Statement st = conn.createStatement();
                  ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM users WHERE username = 'admin_rajesh'")) {
                 if (rs.next() && rs.getInt(1) > 0) {
-                    return;
+                    hasAdmin = true;
                 }
             } catch (SQLException ignored) {
             }
-            String seed = loadResourceScript("/schema_test_seed.sql");
-            if (seed != null && !seed.isEmpty()) {
-                executeSqlScript(conn, seed);
+            if (!hasAdmin) {
+                String seed = loadResourceScript("/schema_test_seed.sql");
+                if (seed != null && !seed.isEmpty()) {
+                    executeSqlScript(conn, seed);
+                }
+            }
+
+            // Ensure 100 people accounts are seeded
+            try (Statement st = conn.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM accounts")) {
+                if (rs.next() && rs.getInt(1) < 100) {
+                    String seed100 = loadResourceScript("/schema_seed_100_accounts.sql");
+                    if (seed100 != null && !seed100.isEmpty()) {
+                        executeSqlScript(conn, seed100);
+                    }
+                }
+            } catch (SQLException ignored) {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.WARNING, "Test seed initialization warning: " + e.getMessage());

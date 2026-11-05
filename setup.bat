@@ -7,16 +7,16 @@ echo ===========================================================================
 
 rem 1. Check Java JDK Prerequisite
 echo [SETUP 1/6] Checking Java Environment...
-where javac >nul 2>nul
-if %errorlevel% equ 0 (
-    set "JAVAC_CMD=javac"
-    set "JAVA_CMD=java"
+if exist "E:\java file\jdk-25.0.2\bin\javac.exe" (
+    set "JAVAC_CMD=E:\java file\jdk-25.0.2\bin\javac.exe"
+    set "JAVA_CMD=E:\java file\jdk-25.0.2\bin\java.exe"
 ) else (
-    if exist "E:\java file\jdk-25.0.2\bin\javac.exe" (
-        set "JAVAC_CMD=E:\java file\jdk-25.0.2\bin\javac.exe"
-        set "JAVA_CMD=E:\java file\jdk-25.0.2\bin\java.exe"
+    where javac >nul 2>nul
+    if %errorlevel% equ 0 (
+        set "JAVAC_CMD=javac"
+        set "JAVA_CMD=java"
     ) else (
-        echo [ERROR] JDK was not found. Please install JDK 17+ or configure PATH.
+        echo [ERROR] JDK was not found. Please install JDK 25+ or configure PATH.
         exit /b 1
     )
 )

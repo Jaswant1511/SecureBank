@@ -2,7 +2,7 @@ Write-Host "====================================================================
 Write-Host "       SECUREBANK LIVE END-TO-END CLIENT-SERVER TEST SUITE                  " -ForegroundColor Cyan
 Write-Host "================================================================================" -ForegroundColor Cyan
 
-$javaCmd = if (Get-Command java -ErrorAction SilentlyContinue) { "java" } elseif (Test-Path "E:\java file\jdk-25.0.2\bin\java.exe") { "E:\java file\jdk-25.0.2\bin\java.exe" } else {
+$javaCmd = if (Test-Path "E:\java file\jdk-25.0.2\bin\java.exe") { "E:\java file\jdk-25.0.2\bin\java.exe" } elseif (Get-Command java -ErrorAction SilentlyContinue) { "java" } else {
     Write-Error "Java runtime not found on PATH or E:\java file\jdk-25.0.2"
     exit 1
 }

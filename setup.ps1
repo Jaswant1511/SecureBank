@@ -22,7 +22,7 @@ if ($javaCmdObj) {
 }
 
 if (-not $JavacCmd) {
-    Write-Error "JDK compiler not found. Ensure Java 17+ is installed."
+    Write-Error "JDK compiler not found. Ensure Java 25+ is installed."
     exit 1
 }
 Write-Host " - Found compiler: $JavacCmd" -ForegroundColor Green

@@ -12,7 +12,7 @@ SecureBank resolves these fundamental flaws through an authoritative **Double-En
 ---
 
 ## 2. Technology Stack & Architectural Topology
-- **Core Runtime**: Java 17 LTS (Pure Java HTTP Server, zero heavy framework dependencies).
+- **Core Runtime**: Java 25 LTS (Pure Java HTTP Server, zero heavy framework dependencies).
 - **Database Access Layer**: Raw JDBC with `java.sql.PreparedStatement`, explicit transaction control (`setAutoCommit(false)`, `commit()`, `rollback()`), row-level pessimistic locking (`SELECT ... FOR UPDATE`), and ACID guarantees.
 - **Relational Databases Supported**:
   - **Primary**: MySQL 8.0+

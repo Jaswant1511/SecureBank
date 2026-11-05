@@ -30,7 +30,7 @@ if (-not $javacCmd) {
 }
 if (-not $javacCmd) {
     Write-Host "[ERROR] JDK compiler 'javac' was not located." -ForegroundColor Red
-    Write-Host "Please install Java 17+ JDK and set JAVA_HOME."
+    Write-Host "Please install Java 25+ JDK and set JAVA_HOME."
     exit 1
 }
 Write-Host "[PASS] JDK Compiler found at: $javacCmd" -ForegroundColor Green

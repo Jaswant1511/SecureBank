@@ -67,7 +67,9 @@ public class BankingSchedulerService {
             return;
         }
         isRunning = false;
-        LOGGER.info("Shutting down BankingSchedulerService...");
+        try {
+            LOGGER.info("Shutting down BankingSchedulerService...");
+        } catch (Throwable ignored) {}
         scheduler.shutdown();
         try {
             if (!scheduler.awaitTermination(3, TimeUnit.SECONDS)) {

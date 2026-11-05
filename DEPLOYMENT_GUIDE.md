@@ -9,7 +9,7 @@ This guide provides end-to-end instructions for deploying, configuring, monitori
 | Component | Minimum Specification | Recommended Production Specification |
 | :--- | :--- | :--- |
 | **Operating System** | Windows 10/11, macOS 12+, Ubuntu 20.04+ | Ubuntu Server 22.04 LTS / Windows Server 2022 |
-| **Java Runtime** | OpenJDK 17 LTS | Eclipse Temurin 17 or 21 LTS |
+| **Java Runtime** | OpenJDK 25 LTS | Eclipse Temurin 25 LTS |
 | **Database** | Embedded H2 (`MODE=MySQL`) | MySQL 8.0+ Enterprise / AWS Aurora MySQL |
 | **Memory (RAM)** | 2 GB Available | 4 GB+ (Heap configured with `-Xms1g -Xmx2g`) |
 | **Storage** | 500 MB Free Disk Space | 20 GB+ NVMe SSD (Encrypted for DB and Backups) |

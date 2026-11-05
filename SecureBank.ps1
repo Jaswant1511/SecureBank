@@ -67,7 +67,7 @@ if (-not $javawCmd) {
 
 if (-not $javawCmd) {
     Write-Host "[ERROR] Java Runtime (javaw.exe or java.exe) was not found." -ForegroundColor Red
-    Write-Host "Please ensure Java 17+ JDK is installed and JAVA_HOME is configured."
+    Write-Host "Please ensure Java 25+ JDK is installed and JAVA_HOME is configured."
     Read-Host "Press Enter to exit..."
     exit 1
 }

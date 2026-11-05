@@ -3,13 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureBank — Enterprise Core Banking Platform</title>
+    <title>SecureBank (Academic Demonstration) — Role-Based Banking Architecture</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="SecureBank is an educational computer science capstone software demonstration. Not a commercial bank.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script>
+        // Synchronous pre-render session guard to prevent Flash of Unauthenticated Content (FOUC)
+        (function() {
+            try {
+                var token = sessionStorage.getItem('sb_token');
+                var userStr = sessionStorage.getItem('sb_user');
+                if (!token || !userStr) {
+                    window.location.replace('login.html');
+                    return;
+                }
+                var user = JSON.parse(userStr);
+                if (user && user.role) {
+                    document.documentElement.setAttribute('data-user-role', user.role);
+                } else {
+                    window.location.replace('login.html');
+                }
+            } catch (e) {
+                window.location.replace('login.html');
+            }
+        })();
+    </script>
+    <style>
+        /* Hide entire application shell until authenticated session is verified */
+        html:not([data-user-role]) body {
+            visibility: hidden !important;
+            opacity: 0 !important;
+            background-color: #F7F5EE;
+        }
+        /* Immediately activate the correct role portal on refresh, eliminating cross-role flash */
+        html[data-user-role="ADMIN"] #customerNav,
+        html[data-user-role="ADMIN"] #customerView,
+        html[data-user-role="ADMIN"] #tellerNav,
+        html[data-user-role="ADMIN"] #tellerView {
+            display: none !important;
+        }
+        html[data-user-role="ADMIN"] #adminNav {
+            display: block !important;
+        }
+        html[data-user-role="ADMIN"] #adminView {
+            display: block !important;
+        }
+        html[data-user-role="TELLER"] #customerNav,
+        html[data-user-role="TELLER"] #customerView,
+        html[data-user-role="TELLER"] #adminNav,
+        html[data-user-role="TELLER"] #adminView {
+            display: none !important;
+        }
+        html[data-user-role="TELLER"] #tellerNav {
+            display: block !important;
+        }
+        html[data-user-role="TELLER"] #tellerView {
+            display: block !important;
+        }
+        html[data-user-role="CUSTOMER"] #adminNav,
+        html[data-user-role="CUSTOMER"] #adminView,
+        html[data-user-role="CUSTOMER"] #tellerNav,
+        html[data-user-role="CUSTOMER"] #tellerView {
+            display: none !important;
+        }
+        html[data-user-role="CUSTOMER"] #customerNav {
+            display: block !important;
+        }
+        html[data-user-role="CUSTOMER"] #customerView {
+            display: block !important;
+        }
+    </style>
 </head>
 <body>
+
+    <!-- ACADEMIC DEMONSTRATION MANDATORY DISCLAIMER BANNER -->
+    <div class="academic-disclaimer-banner" role="alert" style="background:#78350F; color:#FEF3C7; padding:10px 20px; font-size:0.82rem; font-weight:700; line-height:1.4; border-bottom:2px solid #D97706; text-align:center; position:sticky; top:0; z-index:99999; box-shadow:0 2px 10px rgba(0,0,0,0.3);">
+        ⚠️ ACADEMIC CAPSTONE DEMONSTRATION ONLY — NOT A REAL BANK. This website is a coursework simulation developed strictly for educational demonstration of role-based banking architecture (Customer, Teller, Admin) and double-entry ledger accounting. It does NOT offer real financial services, process real money, or open real bank accounts. DO NOT enter real passwords or personal financial data.
+    </div>
 
     <div class="app-shell">
 
@@ -655,9 +728,9 @@
                                     <div class="qa-icon-circle blue"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
                                     <span class="qa-tile-title">Send</span>
                                 </div>
-                                <div class="qa-tile" onclick="openDepositModal()">
-                                    <div class="qa-icon-circle green"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-                                    <span class="qa-tile-title">Deposit</span>
+                                <div class="qa-tile" onclick="showAllTransactionsModal()">
+                                    <div class="qa-icon-circle green"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+                                    <span class="qa-tile-title">Statement</span>
                                 </div>
                                 <div class="qa-tile" onclick="openBillsModal()">
                                     <div class="qa-icon-circle pink"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
@@ -1787,6 +1860,17 @@
                         <label>4-Digit Security PIN</label>
                         <input type="password" id="fdPinInput" class="form-control" maxlength="4" placeholder="Enter PIN" required>
                     </div>
+
+                    <!-- Customer Active FDs Section -->
+                    <div style="margin-top:18px; border-top:1px solid var(--sb-border); padding-top:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <label style="font-weight:700; font-size:0.85rem; color:var(--text-primary); margin-bottom:0;">Your Active Fixed Deposits</label>
+                            <button type="button" class="btn-primary-compact" style="padding:3px 8px; font-size:0.72rem;" onclick="loadCustomerFixedDeposits()">Refresh List</button>
+                        </div>
+                        <div id="customerFdList" style="display:flex; flex-direction:column; gap:8px; max-height:160px; overflow-y:auto;">
+                            <div style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:10px;">Loading your fixed deposits...</div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" onclick="closeModal('fdModal')">Cancel</button>
@@ -2056,6 +2140,17 @@
                     <div style="text-align:right;">
                         <div style="font-size:0.72rem; color:var(--text-muted);">Interest Rate</div>
                         <div style="font-size:0.95rem; font-weight:700; color:var(--success-green);">9.50% p.a.</div>
+                    </div>
+                </div>
+
+                <!-- Customer Active Loans List -->
+                <div style="margin-top:16px; border-top:1px solid var(--sb-border); padding-top:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <label style="font-weight:700; font-size:0.85rem; color:var(--text-primary); margin-bottom:0;">Your Loan Portfolio</label>
+                        <button type="button" class="btn-primary-compact" style="padding:3px 8px; font-size:0.72rem;" onclick="loadCustomerLoansList()">Refresh List</button>
+                    </div>
+                    <div id="customerLoanList" style="display:flex; flex-direction:column; gap:8px; max-height:160px; overflow-y:auto;">
+                        <div style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:10px;">Loading loan portfolio...</div>
                     </div>
                 </div>
             </div>
@@ -2448,7 +2543,7 @@
                             <div>
                                 <span class="badge-pill" style="background:#FEF3C7; color:#D97706; font-size:0.7rem; margin-bottom:4px; display:inline-block;">High Value Cheque Clearing</span>
                                 <div style="font-weight:700; font-size:0.88rem; color:var(--text-primary);">Aarav Sharma &bull; A/C 1001</div>
-                                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Cheque #409218 &bull; HDFC Bank Drawee &bull; Amount: <strong>&#8377; 2,50,000.00</strong></div>
+                                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Cheque #409218 &bull; Demo Clearing Drawee &bull; Amount: <strong>&#8377; 2,50,000.00</strong></div>
                             </div>
                             <div style="display:flex; gap:8px;">
                                 <button type="button" class="btn-primary-compact" style="background:#16A34A; border-color:#16A34A;" onclick="resolvePendingTxn('pendingItem1', 'Approved')">Approve</button>
@@ -2552,7 +2647,7 @@
                 <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:16px;">
                     <div style="background:var(--sb-card-secondary-bg); border:1px solid var(--sb-card-border); border-radius:var(--radius-sm); padding:12px;">
                         <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">JVM Runtime</div>
-                        <div style="font-weight:800; font-size:1.05rem; color:var(--primary-accent); margin-top:2px;">Java 17 (LTS) HotSpot</div>
+                        <div style="font-weight:800; font-size:1.05rem; color:var(--primary-accent); margin-top:2px;">Java 25 (LTS) HotSpot</div>
                         <div style="font-size:0.72rem; color:#16A34A; margin-top:2px;">● Uptime: 99.998%</div>
                     </div>
                     <div style="background:var(--sb-card-secondary-bg); border:1px solid var(--sb-card-border); border-radius:var(--radius-sm); padding:12px;">
@@ -2824,5 +2919,9 @@
 
     <!-- CONTROLLER SCRIPT -->
     <script src="app.js"></script>
+    <!-- BOTTOM ACADEMIC DISCLAIMER BAR -->
+    <div style="font-size:0.75rem; color:#455855; text-align:center; padding:14px 24px; background:#F1EEE4; border-top:1px solid #E8E2D5; margin-top:32px;">
+        <strong>ACADEMIC CAPSTONE DISCLAIMER:</strong> SecureBank is a non-commercial educational demonstration created for computer science coursework assessment. It is not an authorized, licensed, or regulated financial institution. All banking operations, accounts, balances, and customer profiles are simulated. DO NOT submit real passwords or sensitive personal financial information.
+    </div>
 </body>
 </html>

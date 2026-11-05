@@ -1,0 +1,6 @@
+# SecureBank Academic Demonstration
+# This website is an educational demonstration software for coursework evaluation.
+# It is not a real financial institution.
+User-agent: *
+Disallow: /
+

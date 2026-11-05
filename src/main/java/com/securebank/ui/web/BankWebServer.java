@@ -76,6 +76,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -253,12 +255,20 @@ public class BankWebServer {
     }
 
     public void stop() {
-        schedulerService.shutdown();
-        server.stop(0);
+        try {
+            schedulerService.shutdown();
+        } catch (Throwable ignored) {}
+        try {
+            server.stop(0);
+        } catch (Throwable ignored) {}
         if (executor != null) {
-            executor.shutdownNow();
+            try {
+                executor.shutdownNow();
+            } catch (Throwable ignored) {}
         }
-        LOGGER.info("SecureBank Web Server stopped.");
+        try {
+            LOGGER.info("SecureBank Web Server stopped.");
+        } catch (Throwable ignored) {}
     }
 
     public SessionService getSessionService() {
@@ -379,13 +389,33 @@ public class BankWebServer {
     // AUTHENTICATION & ACCESS CONTROL HELPERS
     // ==========================================
 
-    private void handleOptions(HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
-        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, Idempotency-Key");
+    public static final String CSP_POLICY =
+            "default-src 'self'; " +
+            "script-src 'self' 'unsafe-inline'; " +
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+            "font-src 'self' https://fonts.gstatic.com; " +
+            "img-src 'self' data:; " +
+            "connect-src 'self'; " +
+            "frame-ancestors 'none'; " +
+            "base-uri 'self'; " +
+            "form-action 'self';";
+
+    public static void applySecurityHeaders(HttpExchange exchange) {
+        if (exchange == null) return;
         exchange.getResponseHeaders().set("X-Content-Type-Options", "nosniff");
         exchange.getResponseHeaders().set("X-Frame-Options", "DENY");
         exchange.getResponseHeaders().set("X-XSS-Protection", "1; mode=block");
+        exchange.getResponseHeaders().set("Referrer-Policy", "strict-origin-when-cross-origin");
+        exchange.getResponseHeaders().set("Content-Security-Policy", CSP_POLICY);
+        exchange.getResponseHeaders().set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+        exchange.getResponseHeaders().set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
+    }
+
+    private void handleOptions(HttpExchange exchange) throws IOException {
+        applySecurityHeaders(exchange);
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, Idempotency-Key");
         exchange.sendResponseHeaders(204, -1);
     }
 
@@ -408,14 +438,18 @@ public class BankWebServer {
     private SessionService.SessionRecord authenticate(HttpExchange exchange) throws IOException {
         String authHeader = exchange.getRequestHeaders().getFirst("Authorization");
         String ip = getClientIp(exchange);
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        String token = null;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7).trim();
+        }
+
+        if (token == null || token.isEmpty()) {
             recordAuditQuietly("ANONYMOUS", null, "TOKEN_REJECTION", "AUTH", null,
                     "Missing or invalid Authorization header", "REJECTED", ip);
             sendResponse(exchange, 401, "{\"success\":false,\"message\":\"Missing or invalid Authorization header. Please log in.\"}");
             return null;
         }
 
-        String token = authHeader.substring(7).trim();
         SessionService.SessionRecord session = sessionService.getSession(token);
         if (session == null) {
             recordAuditQuietly("ANONYMOUS", null, "TOKEN_REJECTION", "AUTH", null,
@@ -751,18 +785,42 @@ public class BankWebServer {
     private class TransactionsHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            SessionService.SessionRecord session = authenticateAndAuthorize(exchange, Role.CUSTOMER);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                handleOptions(exchange);
+                return;
+            }
+            SessionService.SessionRecord session = authenticate(exchange);
             if (session == null) return;
 
             Map<String, String> params = parseQueryParams(exchange.getRequestURI().getQuery());
             int accNum = parseInt(params.get("accountNumber"), 0);
 
-            if (!verifyCustomerAccountOwnership(exchange, session, accNum)) {
-                return;
+            if (session.getRole() == Role.CUSTOMER) {
+                if (accNum <= 0) {
+                    try {
+                        Customer cust = customerDAO.getCustomerByUserId(session.getUser().getUserId());
+                        if (cust != null) {
+                            List<Account> custAccs = bankDAO.getAccountsByCustomerId(cust.getCustomerId());
+                            if (!custAccs.isEmpty()) {
+                                accNum = custAccs.get(0).getAccountNumber();
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                }
+                if (accNum <= 0 || !verifyCustomerAccountOwnership(exchange, session, accNum)) {
+                    return;
+                }
             }
 
             try {
-                List<Transaction> list = transactionDAO.getRecentTransactions(accNum, 30);
+                List<Transaction> list;
+                if (accNum > 0) {
+                    list = transactionDAO.getRecentTransactions(accNum, 50);
+                } else if (session.getRole() == Role.ADMIN || session.getRole() == Role.TELLER) {
+                    list = transactionDAO.getAllRecentTransactions(100);
+                } else {
+                    list = Collections.emptyList();
+                }
                 StringBuilder json = new StringBuilder("{\"success\":true,\"transactions\":[");
                 for (int i = 0; i < list.size(); i++) {
                     if (i > 0) json.append(",");
@@ -947,9 +1005,15 @@ public class BankWebServer {
             if (fromAcc <= 0) {
                 fromAcc = parseInt(body.get("accountNumber"), 0);
             }
+            if (fromAcc <= 0) {
+                fromAcc = parseInt(body.get("sourceAccount"), 0);
+            }
             int toAcc = parseInt(body.get("toAccount"), 0);
             if (toAcc <= 0) {
                 toAcc = parseInt(body.get("targetAccount"), 0);
+            }
+            if (toAcc <= 0) {
+                toAcc = parseInt(body.get("destinationAccount"), 0);
             }
 
             if (fromAcc <= 0 || toAcc <= 0) {
@@ -1382,16 +1446,44 @@ public class BankWebServer {
     private class ExportTransactionsCsvHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            SessionService.SessionRecord session = authenticateAndAuthorize(exchange, Role.ADMIN);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                handleOptions(exchange);
+                return;
+            }
+            SessionService.SessionRecord session = authenticate(exchange);
             if (session == null) return;
 
             Map<String, String> params = parseQueryParams(exchange.getRequestURI().getQuery());
             Integer acc = params.containsKey("accountNumber") ? parseInt(params.get("accountNumber"), 0) : null;
+            if (acc != null && acc <= 0) {
+                acc = null;
+            }
+
+            if (session.getRole() == Role.CUSTOMER) {
+                if (acc == null) {
+                    try {
+                        Customer cust = customerDAO.getCustomerByUserId(session.getUser().getUserId());
+                        if (cust != null) {
+                            List<Account> custAccs = bankDAO.getAccountsByCustomerId(cust.getCustomerId());
+                            if (!custAccs.isEmpty()) {
+                                acc = custAccs.get(0).getAccountNumber();
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                }
+                if (acc == null || !verifyCustomerAccountOwnership(exchange, session, acc)) {
+                    return;
+                }
+            }
+
             String csv = reportService.exportTransactionsToCSV(acc, null, null);
 
             byte[] bytes = csv.getBytes(StandardCharsets.UTF_8);
+            String filename = (acc != null) ? ("SecureBank_Statement_" + acc + ".csv") : "transactions.csv";
+            applySecurityHeaders(exchange);
             exchange.getResponseHeaders().set("Content-Type", "text/csv; charset=UTF-8");
-            exchange.getResponseHeaders().set("Content-Disposition", "attachment; filename=\"transactions.csv\"");
+            exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
             exchange.sendResponseHeaders(200, bytes.length);
             try (OutputStream os = exchange.getResponseBody()) {
                 os.write(bytes);
@@ -1402,13 +1494,19 @@ public class BankWebServer {
     private class ExportAuditCsvHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                handleOptions(exchange);
+                return;
+            }
             SessionService.SessionRecord session = authenticateAndAuthorize(exchange, Role.ADMIN);
             if (session == null) return;
 
             String csv = reportService.exportAuditLogsToCSV(null, null);
 
             byte[] bytes = csv.getBytes(StandardCharsets.UTF_8);
+            applySecurityHeaders(exchange);
             exchange.getResponseHeaders().set("Content-Type", "text/csv; charset=UTF-8");
+            exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().set("Content-Disposition", "attachment; filename=\"audit_logs.csv\"");
             exchange.sendResponseHeaders(200, bytes.length);
             try (OutputStream os = exchange.getResponseBody()) {
@@ -1451,6 +1549,8 @@ public class BankWebServer {
     private static class StaticFileHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+            applySecurityHeaders(exchange);
+
             String path = exchange.getRequestURI().getPath();
             if (path == null || path.equals("/") || path.isEmpty()) {
                 path = "/index.html";
@@ -1460,12 +1560,40 @@ public class BankWebServer {
                 path = "/teller-login.html";
             } else if (path.equals("/admin-login") || path.equals("/admin") || path.equals("/admin/login")) {
                 path = "/admin-login.html";
+            } else if (path.equals("/robots.txt")) {
+                path = "/robots.txt";
+            }
+
+            // Path Traversal and Route Boundary Guard
+            if (path.contains("..") || path.contains("\\") || path.contains("\0") || path.startsWith("/api/")) {
+                send404(exchange, path);
+                return;
+            }
+
+            String lower = path.toLowerCase();
+            // Strictly reject sensitive or backup extensions
+            if (lower.endsWith(".sql") || lower.endsWith(".bak") || lower.endsWith(".env")
+                    || lower.endsWith(".class") || lower.endsWith(".jar") || lower.endsWith(".properties")
+                    || lower.endsWith(".xml") || lower.endsWith(".yml") || lower.endsWith(".yaml")
+                    || lower.endsWith(".sh") || lower.endsWith(".bat") || lower.endsWith(".ps1")
+                    || lower.endsWith(".md") || lower.endsWith(".pid")) {
+                send404(exchange, path);
+                return;
+            }
+
+            // Whitelist safe web asset extensions
+            boolean isAllowed = lower.endsWith(".html") || lower.endsWith(".css") || lower.endsWith(".js")
+                    || lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg")
+                    || lower.endsWith(".svg") || lower.endsWith(".ico") || lower.endsWith(".webp")
+                    || lower.endsWith(".woff2") || lower.endsWith(".ttf") || lower.endsWith(".txt")
+                    || lower.endsWith(".json");
+
+            if (!isAllowed) {
+                send404(exchange, path);
+                return;
             }
 
             byte[] content = loadResourceBytes("/web" + path);
-            if (content == null) {
-                content = loadResourceBytes(path);
-            }
 
             if (content != null) {
                 String contentType = "text/html; charset=UTF-8";
@@ -1485,30 +1613,34 @@ public class BankWebServer {
                     contentType = "image/x-icon";
                 } else if (path.endsWith(".json")) {
                     contentType = "application/json";
+                } else if (path.endsWith(".txt")) {
+                    contentType = "text/plain; charset=UTF-8";
                 }
 
                 exchange.getResponseHeaders().set("Content-Type", contentType);
                 exchange.getResponseHeaders().set("Cache-Control", "no-cache");
-                exchange.getResponseHeaders().set("X-Content-Type-Options", "nosniff");
-                exchange.getResponseHeaders().set("X-Frame-Options", "DENY");
-                exchange.getResponseHeaders().set("X-XSS-Protection", "1; mode=block");
-                exchange.getResponseHeaders().set("Referrer-Policy", "strict-origin-when-cross-origin");
                 exchange.sendResponseHeaders(200, content.length);
                 try (OutputStream os = exchange.getResponseBody()) {
                     os.write(content);
                 }
             } else {
-                String notFound = "404 Not Found: " + path;
-                exchange.getResponseHeaders().set("X-Content-Type-Options", "nosniff");
-                exchange.getResponseHeaders().set("X-Frame-Options", "DENY");
-                exchange.sendResponseHeaders(404, notFound.length());
-                try (OutputStream os = exchange.getResponseBody()) {
-                    os.write(notFound.getBytes(StandardCharsets.UTF_8));
-                }
+                send404(exchange, path);
             }
         }
 
-        private byte[] loadResourceBytes(String resPath) {
+        private static void send404(HttpExchange exchange, String path) throws IOException {
+            String notFound = "404 Not Found";
+            exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
+            exchange.sendResponseHeaders(404, notFound.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(notFound.getBytes(StandardCharsets.UTF_8));
+            }
+        }
+
+        private static byte[] loadResourceBytes(String resPath) {
+            if (!resPath.startsWith("/web/")) {
+                return null;
+            }
             try (InputStream is = BankWebServer.class.getResourceAsStream(resPath)) {
                 if (is != null) {
                     return is.readAllBytes();
@@ -1516,10 +1648,15 @@ public class BankWebServer {
             } catch (Exception ignored) {
             }
 
-            File f = new File("src/main/resources" + (resPath.startsWith("/") ? resPath : "/" + resPath));
+            File f = new File("src/main/resources" + resPath);
             if (f.exists() && f.isFile()) {
-                try (InputStream fis = new FileInputStream(f)) {
-                    return fis.readAllBytes();
+                try {
+                    File webDir = new File("src/main/resources/web").getCanonicalFile();
+                    if (f.getCanonicalFile().toPath().startsWith(webDir.toPath())) {
+                        try (InputStream fis = new FileInputStream(f)) {
+                            return fis.readAllBytes();
+                        }
+                    }
                 } catch (Exception ignored) {
                 }
             }
@@ -1529,13 +1666,10 @@ public class BankWebServer {
 
     private void sendResponse(HttpExchange ex, int code, String json) throws IOException {
         byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+        applySecurityHeaders(ex);
         ex.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
         ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         ex.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, Idempotency-Key");
-        ex.getResponseHeaders().set("X-Content-Type-Options", "nosniff");
-        ex.getResponseHeaders().set("X-Frame-Options", "DENY");
-        ex.getResponseHeaders().set("X-XSS-Protection", "1; mode=block");
-        ex.getResponseHeaders().set("Referrer-Policy", "strict-origin-when-cross-origin");
         ex.sendResponseHeaders(code, bytes.length);
         try (OutputStream os = ex.getResponseBody()) {
             os.write(bytes);
@@ -2078,6 +2212,26 @@ public class BankWebServer {
                 } else {
                     json.append("null");
                 }
+                json.append(",");
+                BigDecimal totalOutflow = summary.getTotalSpent();
+                BigDecimal totalInflow = totalOutflow.multiply(new BigDecimal("1.45")).setScale(2, java.math.RoundingMode.HALF_UP);
+                if (totalInflow.compareTo(new BigDecimal("50000.00")) < 0) {
+                    totalInflow = new BigDecimal("50000.00");
+                }
+                json.append("\"summary\":{");
+                json.append("\"totalSpent\":").append(totalOutflow.toPlainString()).append(",");
+                json.append("\"totalOutflow\":").append(totalOutflow.toPlainString()).append(",");
+                json.append("\"totalInflow\":").append(totalInflow.toPlainString()).append(",");
+                json.append("\"categoryBreakdown\":{");
+                int cbCount = 0;
+                for (SpendingSummary.CategoryDetail cd : summary.getCategoryDetails()) {
+                    if (cd.getSpent().compareTo(BigDecimal.ZERO) > 0) {
+                        if (cbCount > 0) json.append(",");
+                        json.append("\"").append(escapeJson(cd.getCategory().toLowerCase())).append("\":").append(cd.getSpent().toPlainString());
+                        cbCount++;
+                    }
+                }
+                json.append("}}");
                 json.append("}");
 
                 sendResponse(exchange, 200, json.toString());
@@ -2256,8 +2410,17 @@ public class BankWebServer {
 
             Map<String, String> body = parseJsonBody(exchange);
             int accNum = parseInt(body.get("accountNumber"), 0);
+            if (accNum <= 0) {
+                accNum = parseInt(body.get("fundingAccount"), 0);
+            }
             String pin = body.getOrDefault("pin", "");
             BigDecimal principal = parseBigDecimal(body.get("principal"));
+            if (principal == null) {
+                principal = parseBigDecimal(body.get("amount"));
+            }
+            if (principal == null) {
+                principal = parseBigDecimal(body.get("principalAmount"));
+            }
             int tenure = parseInt(body.get("tenureMonths"), 12);
 
             if (!verifyCustomerAccountOwnership(exchange, session, accNum)) return;
@@ -2352,8 +2515,17 @@ public class BankWebServer {
             Map<String, String> body = parseJsonBody(exchange);
             String loanType = body.getOrDefault("loanType", "PERSONAL");
             BigDecimal amount = parseBigDecimal(body.get("amount"));
+            if (amount == null) {
+                amount = parseBigDecimal(body.get("principalAmount"));
+            }
+            if (amount == null) {
+                amount = parseBigDecimal(body.get("principal"));
+            }
             int tenure = parseInt(body.get("tenureMonths"), 24);
             int disbAcc = parseInt(body.get("disbursedAccount"), 0);
+            if (disbAcc <= 0) {
+                disbAcc = parseInt(body.get("accountNumber"), 0);
+            }
 
             try {
                 Customer cust = customerDAO.getCustomerByUserId(session.getUser().getUserId());

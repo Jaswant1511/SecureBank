@@ -1,15 +1,15 @@
 # SecureBank Build Script for PowerShell
 $ErrorActionPreference = "Stop"
 
-$javacCmd = Get-Command javac -ErrorAction SilentlyContinue
-if (-not $javacCmd) {
-    if (Test-Path "E:\java file\jdk-25.0.2\bin\javac.exe") {
-        $javacCmd = "E:\java file\jdk-25.0.2\bin\javac.exe"
-    } else {
-        Write-Error "javac compiler not found on PATH or E:\java file\jdk-25.0.2."
-    }
+if (Test-Path "E:\java file\jdk-25.0.2\bin\javac.exe") {
+    $javacCmd = "E:\java file\jdk-25.0.2\bin\javac.exe"
 } else {
-    $javacCmd = $javacCmd.Source
+    $javacCmd = Get-Command javac -ErrorAction SilentlyContinue
+    if ($javacCmd) {
+        $javacCmd = $javacCmd.Source
+    } else {
+        Write-Error "Java 25+ javac compiler not found on PATH or E:\java file\jdk-25.0.2."
+    }
 }
 
 Write-Host "[BUILD] Using Java Compiler: $javacCmd" -ForegroundColor Cyan

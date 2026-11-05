@@ -81,6 +81,22 @@ public class TransactionDAO {
         return list;
     }
 
+    public List<Transaction> getAllRecentTransactions(int limit) throws SQLException {
+        final String sql = "SELECT transaction_id, transaction_ref, account_number, txn_type, amount, balance_after, remarks, related_account_number, txn_timestamp "
+            + "FROM transactions ORDER BY txn_timestamp DESC, transaction_id DESC LIMIT ?";
+        List<Transaction> list = new ArrayList<>();
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRowToTransaction(rs));
+                }
+            }
+        }
+        return list;
+    }
+
     public String[] fetchLastFiveTransactions(Connection conn, int accountNumber) throws SQLException {
         final String sql = "SELECT transaction_id, transaction_ref, txn_type, amount, balance_after, remarks, txn_timestamp "
             + "FROM transactions WHERE account_number = ? ORDER BY txn_timestamp DESC, transaction_id DESC LIMIT 5";

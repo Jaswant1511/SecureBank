@@ -185,7 +185,7 @@ All 48 tests pass 100.0% through `test.bat` with zero external dependencies.
 
 | Topic | Key Terminology to Mention |
 | :--- | :--- |
-| **Language & Architecture** | Java 17+/25, 4-Tier Layered Architecture, Clean Separation of Concerns |
+| **Language & Architecture** | Java 25 LTS, 4-Tier Layered Architecture, Clean Separation of Concerns |
 | **OOP Pillars** | Encapsulation (private fields), Inheritance (`Account` -> `Savings`/`Current`), Polymorphism (`withdraw()`), Abstraction (`DAO`/`Service`) |
 | **Financial Integrity** | `BigDecimal`, Scale 2, `ROUND_HALF_EVEN`, SQL `DECIMAL(15,2)` |
 | **ACID & Concurrency** | `setAutoCommit(false)`, `commit()`, `rollback()`, `SELECT ... FOR UPDATE`, Ordered Account Locking |
